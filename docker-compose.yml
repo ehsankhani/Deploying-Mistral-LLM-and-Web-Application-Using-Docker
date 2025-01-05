@@ -1,0 +1,33 @@
+version: "3.8"
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=development
+    depends_on:
+      - ollama_model
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  ollama_model:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"  
+    environment:
+      - MODEL=mistral
+    volumes:
+      - ./ollama-pull.sh:/ollama-pull.sh  
+    entrypoint:
+      - sh
+      - -c
+      - |
+        chmod +x /ollama-pull.sh &&  # Make sure the script is executable
+        /ollama-pull.sh              # Run the script
+
